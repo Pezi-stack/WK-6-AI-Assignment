@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canva Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: none;
+            padding: 60px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide-container.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .slide-container.active .slide-content-left {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .slide h2 {
+            font-size: 2.5em;
+            color: #555;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .slide p {
+            font-size: 1.5em;
+            color: #666;
+            line-height: 1.6;
+            max-width: 800px;
+        }
+
+        .slide ul {
+            text-align: left;
+            font-size: 1.3em;
+            color: #666;
+            max-width: 700px;
+            margin: 20px 0;
+        }
+
+        .slide ul li {
+            margin: 15px 0;
+            padding-left: 10px;
+        }
+
+        .slide table {
+            width: 100%;
+            max-width: 900px;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        .slide table th,
+        .slide table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .slide table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .slide table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 20px 0;
+            overflow-x: auto;
+            text-align: left;
+            max-width: 900px;
+        }
+
+        .slide-content-left {
+            text-align: left;
+            align-items: flex-start;
+        }
+
+        .slide h3 {
+            font-size: 1.8em;
+            color: #667eea;
+            margin: 20px 0 15px 0;
+            font-weight: 600;
+        }
+
+        .slide h4 {
+            font-size: 1.4em;
+            color: #555;
+            margin: 15px 0 10px 0;
+            font-weight: 600;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Slide-specific styles */
+        .slide-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .slide-title h1 {
+            color: white;
+        }
+
+        .slide-content {
+            background: #f8f9fa;
+        }
+
+        .slide-image {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">17</span>
+        </div>
+
+        <!-- Slide 1: Title Slide -->
+        <div class="slide-container active">
+            <div class="slide slide-title">
+                <h1>AI Technologies Comparison</h1>
+                <p style="font-size: 1.8em; color: rgba(255,255,255,0.9); margin-top: 30px;">
+                    Edge AI vs Cloud-Based AI
+                </p>
+                <p style="font-size: 1.8em; color: rgba(255,255,255,0.9); margin-top: 20px;">
+                    Quantum AI vs Classical AI
+                </p>
+                <p style="font-size: 1.2em; color: rgba(255,255,255,0.8); margin-top: 40px;">
+                    Latency Reduction, Privacy Enhancement & Optimization Problem Solving
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Q1 - Executive Summary -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Q1: Edge AI vs Cloud-Based AI</h2>
+                <h3>Executive Summary</h3>
+                <p style="font-size: 1.2em; text-align: left; margin-top: 20px;">
+                    Edge AI represents a paradigm shift in artificial intelligence deployment by moving computational resources closer to data generation sources, fundamentally addressing two critical limitations of cloud-based AI:
+                </p>
+                <ul style="margin-top: 20px;">
+                    <li><strong>Latency:</strong> Real-time processing at the source</li>
+                    <li><strong>Privacy:</strong> Sensitive data remains local</li>
+                </ul>
+                <p style="font-size: 1.1em; text-align: left; margin-top: 20px; font-style: italic;">
+                    Indispensable for applications requiring immediate responses and data protection.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Q1 - Latency Reduction Mechanisms -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Latency Reduction Mechanisms</h2>
+                <h3>1. Proximity-Based Processing</h3>
+                <ul>
+                    <li><strong>Network Elimination:</strong> Removes round-trip transmission delays (50-500ms)</li>
+                    <li><strong>Localized Computation:</strong> Processing occurs within meters of generation</li>
+                    <li><strong>Dedicated Resources:</strong> Exclusive computational capacity without contention</li>
+                </ul>
+                <h3 style="margin-top: 30px;">2. Architectural Efficiency</h3>
+                <p style="font-size: 1em; margin-top: 10px;">
+                    <strong>Cloud AI:</strong> Data → Network → Internet → Cloud Server → Processing → Network → Internet → Action<br>
+                    <strong>Edge AI:</strong> Data → Local Processor → Action
+                </p>
+                <p style="font-size: 1.1em; margin-top: 15px; color: #667eea; font-weight: 600;">
+                    Result: 20x improvement (200-1000ms → 10-50ms)
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Q1 - Privacy Enhancement -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Privacy Enhancement Mechanisms</h2>
+                <h3>1. Data Localization Principle</h3>
+                <ul>
+                    <li>No data transmission - sensitive information never leaves device</li>
+                    <li>Local storage only - data in controlled, secure environments</li>
+                    <li>User sovereignty - complete control over data access</li>
+                </ul>
+                <h3 style="margin-top: 30px;">2. Reduced Attack Surface</h3>
+                <table>
+                    <tr>
+                        <th>Attack Vector</th>
+                        <th>Cloud AI Risk</th>
+                        <th>Edge AI Mitigation</th>
+                    </tr>
+                    <tr>
+                        <td>Data in Transit</td>
+                        <td>High</td>
+                        <td>None (no transmission)</td>
+                    </tr>
+                    <tr>
+                        <td>Third-Party Access</td>
+                        <td>High</td>
+                        <td>Minimal (local control)</td>
+                    </tr>
+                    <tr>
+                        <td>Data Residency</td>
+                        <td>Complex</td>
+                        <td>Simple (local jurisdiction)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 5: Q1 - Real-World Example -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Real-World Example: Autonomous Drones</h2>
+                <h3>Emergency Response Scenario</h3>
+                <p style="font-size: 1.1em; margin-top: 15px;">
+                    <strong>Latency-Critical Operations:</strong>
+                </p>
+                <div class="code-block">
+obstacle_distance = 50 meters  # At 60 km/h flight speed
+reaction_time_cloud = 500ms   # Cloud processing latency
+reaction_time_edge = 25ms     # Edge processing latency
+
+# Distance traveled during processing:
+cloud_travel = 8.3 meters
+edge_travel = 0.42 meters
+
+# Result: Edge AI prevents collisions
+                </div>
+                <p style="font-size: 1.1em; margin-top: 15px;">
+                    <strong>Privacy-Sensitive:</strong> Victim identification, infrastructure mapping, emergency communications processed locally
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Q1 - Comparative Analysis -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Comparative Analysis: Performance Metrics</h2>
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Cloud AI</th>
+                        <th>Edge AI</th>
+                        <th>Improvement</th>
+                    </tr>
+                    <tr>
+                        <td>Average Latency</td>
+                        <td>200-1000ms</td>
+                        <td>10-50ms</td>
+                        <td>20x faster</td>
+                    </tr>
+                    <tr>
+                        <td>Data Transmission</td>
+                        <td>100% external</td>
+                        <td>0% external</td>
+                        <td>Complete elimination</td>
+                    </tr>
+                    <tr>
+                        <td>Network Dependency</td>
+                        <td>Critical</td>
+                        <td>Optional</td>
+                        <td>Operational independence</td>
+                    </tr>
+                    <tr>
+                        <td>Privacy Compliance</td>
+                        <td>Complex</td>
+                        <td>Simple</td>
+                        <td>Reduced burden</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 7: Q1 - Conclusion -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Q1: Conclusion</h2>
+                <p style="font-size: 1.2em; margin-top: 20px;">
+                    Edge AI fundamentally transforms AI deployment by addressing core limitations of cloud-based approaches:
+                </p>
+                <ul style="margin-top: 20px;">
+                    <li>Dramatically reduced latency (20x improvement)</li>
+                    <li>Enhanced privacy protection (data sovereignty)</li>
+                    <li>Enables new class of real-time applications</li>
+                    <li>Operational independence from network connectivity</li>
+                </ul>
+                <p style="font-size: 1.1em; margin-top: 30px; font-style: italic; color: #667eea;">
+                    Foundational architecture for intelligent systems demanding immediacy and privacy.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Q2 - Title -->
+        <div class="slide-container">
+            <div class="slide slide-title">
+                <h1>Q2: Quantum AI vs Classical AI</h1>
+                <p style="font-size: 1.8em; color: rgba(255,255,255,0.9); margin-top: 30px;">
+                    Optimization Problem Solving
+                </p>
+                <p style="font-size: 1.5em; color: rgba(255,255,255,0.8); margin-top: 20px;">
+                    Industry Impact & Transformation
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Q2 - Theoretical Foundation -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Theoretical Foundation</h2>
+                <h3>Classical AI Optimization</h3>
+                <ul>
+                    <li>Binary bits (0 or 1) processing</li>
+                    <li>Linear/Integer Programming, Genetic Algorithms</li>
+                    <li>Simulated Annealing, Gradient Descent</li>
+                </ul>
+                <p style="font-size: 1em; margin-top: 15px; color: #d32f2f;">
+                    <strong>Limitations:</strong> Combinatorial explosion, local optima trapping, polynomial time constraints
+                </p>
+                <h3 style="margin-top: 30px;">Quantum AI Optimization</h3>
+                <ul>
+                    <li><strong>Superposition:</strong> Qubits exist as probabilistic combinations</li>
+                    <li><strong>Entanglement:</strong> Correlated states enable parallel computation</li>
+                    <li><strong>Interference:</strong> Constructive/destructive state interference</li>
+                    <li><strong>Tunneling:</strong> Traverse energy barriers between solutions</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: Q2 - Comparative Analysis -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Comparative Analysis</h2>
+                <table>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Classical AI</th>
+                        <th>Quantum AI</th>
+                    </tr>
+                    <tr>
+                        <td>Solution Space Exploration</td>
+                        <td>Sequential/Parallel sampling</td>
+                        <td>Simultaneous superposition</td>
+                    </tr>
+                    <tr>
+                        <td>Local Optima Handling</td>
+                        <td>Gets trapped easily</td>
+                        <td>Quantum tunneling escapes</td>
+                    </tr>
+                    <tr>
+                        <td>Scalability</td>
+                        <td>Exponential time for hard problems</td>
+                        <td>Quadratic/exponential speedup</td>
+                    </tr>
+                    <tr>
+                        <td>Solution Quality</td>
+                        <td>Often approximate</td>
+                        <td>Higher probability of global optimum</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 11: Q2 - Industries: Pharmaceuticals -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Industries: Pharmaceuticals & Drug Discovery</h2>
+                <h3>Current Classical Limitations</h3>
+                <ul>
+                    <li>Molecular simulation complexity limits protein folding</li>
+                    <li>Drug interaction screening takes years</li>
+                    <li>Limited quantum mechanical effects modeling</li>
+                </ul>
+                <h3 style="margin-top: 30px;">Quantum AI Advantages</h3>
+                <ul>
+                    <li>Exact quantum mechanical simulation</li>
+                    <li>Native quantum problem - exponential speedup</li>
+                    <li>Accurate drug-target interaction prediction</li>
+                    <li>Millions of compounds simultaneously</li>
+                </ul>
+                <p style="font-size: 1.1em; margin-top: 20px; color: #667eea; font-weight: 600;">
+                    Impact: Reduce discovery timeline from 10+ years to 2-3 years
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Q2 - Industries: Financial Services -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Industries: Financial Services</h2>
+                <h3>Classical Constraints</h3>
+                <ul>
+                    <li>Limited to simplified models with few assets</li>
+                    <li>Suboptimal risk-return tradeoffs</li>
+                    <li>Inadequate real-time optimization</li>
+                </ul>
+                <h3 style="margin-top: 30px;">Quantum Breakthroughs</h3>
+                <ul>
+                    <li>Portfolio optimization: 1000+ assets with complex constraints</li>
+                    <li>Real-time Monte Carlo risk analysis</li>
+                    <li>Multi-market arbitrage detection</li>
+                    <li>Quantum-enhanced fraud prevention</li>
+                </ul>
+                <p style="font-size: 1.1em; margin-top: 20px; color: #667eea; font-weight: 600;">
+                    Expected: 20-30% improvement in risk-adjusted returns
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 13: Q2 - Industries: Logistics -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Industries: Logistics & Supply Chain</h2>
+                <h3>Classical Inefficiencies</h3>
+                <ul>
+                    <li>Vehicle routing intractable beyond 100 locations</li>
+                    <li>Suboptimal global inventory management</li>
+                    <li>Inefficient real-time scheduling</li>
+                </ul>
+                <h3 style="margin-top: 30px;">Quantum Solutions</h3>
+                <ul>
+                    <li>Optimal routes for 1000+ delivery points</li>
+                    <li>Global supply chain synchronization</li>
+                    <li>Real-time adaptive manufacturing schedules</li>
+                    <li>Route optimization saving 15-25% in costs</li>
+                </ul>
+                <p style="font-size: 1.1em; margin-top: 20px; color: #667eea; font-weight: 600;">
+                    Potential: Reduce global logistics costs by $1-2 trillion annually
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Q2 - Industries: Energy -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Industries: Energy & Materials Science</h2>
+                <h3>Current Challenges</h3>
+                <ul>
+                    <li>Inaccurate complex molecular structure simulation</li>
+                    <li>Suboptimal catalyst design</li>
+                    <li>Inefficient energy grid management</li>
+                </ul>
+                <h3 style="margin-top: 30px;">Quantum Advantages</h3>
+                <ul>
+                    <li>High-density energy storage design</li>
+                    <li>Optimized reaction pathways for clean energy</li>
+                    <li>Quantum-optimized energy distribution</li>
+                    <li>Nuclear fusion plasma confinement optimization</li>
+                </ul>
+                <p style="font-size: 1.1em; margin-top: 20px; color: #667eea; font-weight: 600;">
+                    Impact: Accelerate room-temperature superconductors, efficient carbon capture
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 15: Q2 - Industries: Aerospace -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Industries: Aerospace & Manufacturing</h2>
+                <h3>Classical Limitations</h3>
+                <ul>
+                    <li>Aerodynamic optimization limited to simplified models</li>
+                    <li>Suboptimal composite material design</li>
+                    <li>Inefficient production scheduling</li>
+                </ul>
+                <h3 style="margin-top: 30px;">Quantum Applications</h3>
+                <ul>
+                    <li>Quantum fluid dynamics simulation</li>
+                    <li>Optimal composite material structures</li>
+                    <li>Factory-level scheduling and resource allocation</li>
+                    <li>Complex multi-objective space mission optimization</li>
+                </ul>
+                <p style="font-size: 1.1em; margin-top: 20px; color: #667eea; font-weight: 600;">
+                    Strategic: 30-50% improvement in aircraft fuel efficiency
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 16: Q2 - Implementation Timeline -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Implementation Timeline & Readiness</h2>
+                <h3>Current State (2024-2028)</h3>
+                <ul>
+                    <li><strong>NISQ Era:</strong> Noisy Intermediate-Scale Quantum devices</li>
+                    <li><strong>Hybrid Approaches:</strong> Quantum-classical algorithms (VQE, QAOA)</li>
+                    <li><strong>Specialized Applications:</strong> Specific optimization problems</li>
+                </ul>
+                <h3 style="margin-top: 30px;">Medium Term (2029-2035)</h3>
+                <ul>
+                    <li>Fault-Tolerant Quantum Computing</li>
+                    <li>Commercial industry-specific solutions</li>
+                    <li>Scalable generalized algorithms</li>
+                </ul>
+                <h3 style="margin-top: 30px;">Long Term (2036+)</h3>
+                <ul>
+                    <li>Full Quantum Advantage</li>
+                    <li>Industry transformation</li>
+                    <li>New quantum-enabled markets</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 17: Q2 - Conclusion -->
+        <div class="slide-container">
+            <div class="slide slide-content slide-content-left">
+                <h2>Q2: Conclusion</h2>
+                <p style="font-size: 1.2em; margin-top: 20px;">
+                    Quantum AI represents a fundamental paradigm shift in optimization capability:
+                </p>
+                <ul style="margin-top: 20px;">
+                    <li>Transformative potential for complex combinatorial optimization</li>
+                    <li>Industries with enormous economic value at stake</li>
+                    <li>Gradual transition from hybrid to fully quantum-native solutions</li>
+                    <li>Redefines what's computationally feasible</li>
+                </ul>
+                <p style="font-size: 1.1em; margin-top: 30px; font-style: italic; color: #667eea;">
+                    Strategic imperative: Build quantum literacy, establish partnerships, identify use cases for competitive differentiation.
+                </p>
+            </div>
+        </div>
+
+        <div class="slide-indicators" id="indicators"></div>
+        <div class="slide-number">Use arrow keys or buttons to navigate</div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide-container');
+        const totalSlides = slides.length;
+
+        // Update total slides counter
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        // Create indicators
+        const indicatorsContainer = document.getElementById('indicators');
+        for (let i = 0; i < totalSlides; i++) {
+            const indicator = document.createElement('div');
+            indicator.className = 'indicator';
+            if (i === 0) indicator.classList.add('active');
+            indicator.addEventListener('click', () => goToSlide(i));
+            indicatorsContainer.appendChild(indicator);
+        }
+
+        function showSlide(n) {
+            if (n >= totalSlides) {
+                currentSlide = 0;
+            } else if (n < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = n;
+            }
+
+            // Hide all slides
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            // Show current slide
+            slides[currentSlide].classList.add('active');
+
+            // Update counter
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+
+            // Update indicators
+            document.querySelectorAll('.indicator').forEach((ind, idx) => {
+                if (idx === currentSlide) {
+                    ind.classList.add('active');
+                } else {
+                    ind.classList.remove('active');
+                }
+            });
+
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            // Allow next button to loop to beginning
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        function goToSlide(n) {
+            showSlide(n);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
+
+

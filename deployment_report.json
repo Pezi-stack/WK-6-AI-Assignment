@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-11-13T22:11:35.020663",
+  "model_architecture": "Lightweight CNN for Edge Deployment",
+  "training_config": {
+    "img_size": [
+      128,
+      128
+    ],
+    "batch_size": 32,
+    "epochs": 50,
+    "learning_rate": 0.001,
+    "num_classes": 6
+  },
+  "performance_metrics": {
+    "final_training_accuracy": 0.91,
+    "final_validation_accuracy": 0.83,
+    "tflite_test_accuracy": 0.15,
+    "inference_time_ms": 0.5701398849487305,
+    "max_fps": 1753.9555228449321
+  },
+  "model_sizes": {
+    "DEFAULT": 1056.2421875,
+    "FLOAT16": 2099.921875
+  },
+  "system_info": {
+    "platform": "Windows",
+    "processor": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel",
+    "memory_gb": 15.728885650634766,
+    "python_version": "3.13.9",
+    "tensorflow_version": "2.20.0"
+  },
+  "class_names": [
+    "cardboard",
+    "glass",
+    "metal",
+    "paper",
+    "plastic",
+    "trash"
+  ],
+  "edge_ai_benefits": {
+    "latency_reduction": "10-50ms vs 200-1000ms cloud processing",
+    "privacy_advantages": "No data transmission, local processing only",
+    "bandwidth_efficiency": "Zero cloud bandwidth requirements",
+    "reliability": "Operates offline, no network dependency",
+    "cost_savings": "No cloud computing costs"
+  }
+}
